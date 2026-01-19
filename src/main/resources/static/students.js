@@ -1,0 +1,97 @@
+fetch("/api/student")
+  .then(res => {
+    if (!res.ok) throw new Error("Unauthorized");
+    return res.json();
+  })
+  .then(data => {
+    const table = document.getElementById("studentsTable");
+    table.innerHTML = "";
+
+    data.forEach(s => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${s.seatNumber}</td>
+        <td>${s.name}</td>
+        <td>${s.phone}</td>
+        <td>${formatDate(s.startDate)}</td>
+        <td>${formatDate(s.endDate)}</td>
+        <td>₹${s.amount}</td>
+        <td>
+          <button onclick="${s.id}">Vacate</button>
+        </td>
+      `;
+      row.onclick = () => vacate(s.id);
+
+      table.appendChild(row);
+    });
+  })
+  .catch(() => {
+    window.location.href = "/dashboard.html";
+  });
+
+function vacate(id) {
+  if (!confirm("Vacate this student?")) return;
+
+   console.log("Vacate response status:", id);
+  fetch(`/api/student/${id}/vacate`, { method: "POST" })
+    .then(() => location.reload());
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString();
+}
+
+
+function openEditModal(s) {
+  document.getElementById("editId").value = s.id;
+  document.getElementById("editName").value = s.name;
+  document.getElementById("editPhone").value = s.phone;
+  document.getElementById("editSeat").value = s.seatNumber;
+
+  if (s.endDate) {
+    document.getElementById("editEndDate").value =
+      s.endDate.split("T")[0];
+  }
+
+  document.getElementById("editModal").classList.remove("hidden");
+}
+
+function closeModal() {
+  document.getElementById("editModal").classList.add("hidden");
+}
+
+
+function saveStudent() {
+  const id = document.getElementById("editId").value;
+
+  const payload = {
+    name: document.getElementById("editName").value,
+    phone: document.getElementById("editPhone").value,
+    seatNumber: parseInt(document.getElementById("editSeat").value),
+    endDate: document.getElementById("editEndDate").value + "T00:00:00"
+  };
+
+  fetch(`/api/students/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(() => location.reload());
+}
+
+//search student / Filter student
+function searchStudents() {
+  const name = document.getElementById("searchName").value;
+  const phone = document.getElementById("searchPhone").value;
+  const seat = document.getElementById("searchSeat").value;
+
+  let url = "/api/student/search?";
+  if (name) url += `name=${name}&`;
+  if (phone) url += `phone=${phone}&`;
+  if (seat) url += `seat=${seat}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(renderStudentTable);
+}

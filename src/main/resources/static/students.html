@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Students</title>
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+
+<div id="headerContainer"></div>
+
+<div class="content">
+    <h2>Students</h2>
+    <div class="search-bar">
+        <input type="text" id="searchName" placeholder="Search by name">
+        <input type="text" id="searchPhone" placeholder="Search by phone">
+        <input type="number" id="searchSeat" placeholder="Seat no">
+        <button onclick="searchStudents()">Search</button>
+        <button onclick="loadStudents()">Reset</button>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Seat</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Amount</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="studentsTable"></tbody>
+    </table>
+</div>
+
+<div id="editModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Edit Student</h3>
+
+        <input type="hidden" id="editId">
+
+        <label>Name</label>
+        <input id="editName">
+
+        <label>Phone</label>
+        <input id="editPhone">
+
+        <label>Seat Number</label>
+        <input id="editSeat" type="number">
+
+        <label>End Date</label>
+        <input id="editEndDate" type="date">
+
+        <div class="modal-actions">
+            <button onclick="saveStudent()">Save</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    fetch("/header.html")
+      .then(res => res.text())
+      .then(html => document.getElementById("headerContainer").innerHTML = html);
+</script>
+
+<script src="/header.js"></script>
+<script src="/students.js"></script>
+
+</body>
+</html>
