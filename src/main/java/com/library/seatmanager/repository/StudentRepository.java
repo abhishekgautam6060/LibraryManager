@@ -42,4 +42,10 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
     List<Student> findByActiveTrueAndExpiryDateBefore(
             LocalDate today
     );
+
+    @Query("SELECT COALESCE(SUM(s.amountPaid),0) FROM Student s WHERE s.active = true")
+    int sumAmountPaidByActive();
+
+    @Query("SELECT COALESCE(SUM(s.amount),0) FROM Student s WHERE s.active = true")
+    int sumMonthlyAmountByActive();
 }
